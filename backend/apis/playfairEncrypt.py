@@ -157,18 +157,18 @@ def encryptByPlayfairCipher(Matrix, plainList):
 
 def encryptByPlayFair(text_Plain, key):
 
-	text_Plain = 'instruments'
+	text_Plain = text_Plain
 	text_Plain = removeSpaces(toLowerCase(text_Plain))
 	PlainTextList = Diagraph(FillerLetter(text_Plain))
 	if len(PlainTextList[-1]) != 2:
 		PlainTextList[-1] = PlainTextList[-1]+'z'
 
-	key = "Monarchy"
-	print("Key text:", key)
+	key = key
+	# print("Key text:", key)
 	key = toLowerCase(key)
 	Matrix = generateKeyTable(key, list1)
 
-	print("Plain Text:", text_Plain)
+	# print("Plain Text:", text_Plain)
 	CipherList = encryptByPlayfairCipher(Matrix, PlainTextList)
 
 	cipherText = ""
@@ -176,4 +176,6 @@ def encryptByPlayFair(text_Plain, key):
 		cipherText += i
 	
 	return cipherText
+
+# print(encryptByPlayFair("Attackatdawn","GravityFalls"))
 

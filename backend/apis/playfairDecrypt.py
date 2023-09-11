@@ -97,7 +97,7 @@ def decryptByPlayfairCipher(str, key):
 
 
 
-def decryptByPlayFair(key,str):
+def decryptByPlayFair(str, key):
 	# str = "gatlmzclrqtx"
 	# key = "Monarchy"
 
