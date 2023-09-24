@@ -3,12 +3,36 @@ import InputBox from "./InputBox";
 import React, { useState } from "react";
 import Btn from "./Btn";
 import Radio from "./Radio";
+import { Matrix } from "./Matrix";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+import {
+  playFairEncryptAPI,
+  ceaserCipherEncryptAPI,
+  playFairDecryptAPI,
+  ceaserCipherDecryptAPI,
+  desEncryptDecrypt,
+  aesEncryptDecrypt,
+  polyEncryptDecrypt,
+} from "./api";
+
+import {
+  ComponentOne,
+  ComponentTwo,
+  ComponentThree,
+  ComponentFour,
+  ComponentFive,
+} from "./Inp";
 
 function AppBody() {
   const [string1, setString1] = useState("");
   const [string2, setString2] = useState("");
   const [result, setResult] = useState("");
   const [flag, setFlag] = useState(false);
+  const [matrix, setMatrix] = useState([]);
+  const [condition, setCondition] = useState("ComponentOne");
+  const [row, setRow] = useState("");
 
   const [selectedOption, setSelectedOption] = useState(null);
 
@@ -23,47 +47,127 @@ function AppBody() {
     }
   }
 
+  const hasNumbers = (str) => {
+    return /\d/.test(str);
+  };
+
   const playFairEncrypt = () => {
     if (selectedOption === "Playfair") {
-      fetch(
-        `http://127.0.0.1:8000/apis/playfairencrypt/?plain_text=${string1}&key=${string2}`
-      )
-        .then((response) => response.json())
-        .then((data) => setResult(data.encrypted_string))
-        .catch((error) => console.error("Error:", error));
+      if (hasNumbers(string2) !== true && hasNumbers(string1) !== true) {
+        playFairEncryptAPI(string1, string2)
+          // .then((encryptedString,matrix) => setResult(encryptedString))
+          .then((result) => {
+            // console.log(result.encrypted_string);
+            setResult(result.encrypted_string);
+            setMatrix(result.matrix);
+            console.log(result.matrix);
+          })
+          // .then((data) => setResult(data))
+          .catch((error) => console.error("Error:", error));
+        setRow(true);
+      } else {
+        // console.log("As");
+        toast.error("Don't include Numbers in plain text or key!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        // toast("");
+      }
     } else if (selectedOption === "CeaserCipher") {
-      fetch(
-        `http://127.0.0.1:8000/apis/ceasercipherencrypt/?plain_text=${string1}&shift=${string2}`
-      )
-        .then((response) => response.json())
-        .then((data) => setResult(data.encrypted_string))
+      ceaserCipherEncryptAPI(string1, string2)
+        .then((encryptedString) => setResult(encryptedString))
         .catch((error) => console.error("Error:", error));
+      setRow(false);
+    } else if (selectedOption === "DES") {
+      desEncryptDecrypt(string1, string2, "en")
+        .then((data) => {
+          // console.log("data is",data.encrypted_string);
+          setResult(data.encrypted_string);
+        })
+        .catch((error) => console.error("Error:", error));
+      setRow(false);
+    } else if (selectedOption === "AES") {
+      if (string2.length>=16) {
+        aesEncryptDecrypt(string1, string2, "en")
+          .then((data) => {
+            console.log("data is", data);
+            setResult(data.encrypted_string);
+          })
+          .catch((error) => console.error("Error:", error));
+        setRow(false);
+      }else{
+        toast.error("Key length should be greater than or euqal to 16!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      }
+    } else if (selectedOption === "PolyCipher") {
+      polyEncryptDecrypt(string1, string2, "en")
+        .then((data) => {
+          // console.log("data is",data.encrypted_string);
+          setResult(data.encrypted_string);
+        })
+        .catch((error) => console.error("Error:", error));
+      setRow(false);
     }
   };
 
   const playFairDecrypt = () => {
     if (selectedOption === "Playfair") {
-      fetch(
-        `http://127.0.0.1:8000/apis/playfairdecrypt/?en_plain_text=${result}&key=${string2}`
-      )
-        .then((response) => response.json())
+      playFairDecryptAPI(result, string2)
+        .then((decryptedString) => setResult(decryptedString))
+        .catch((error) => console.error("Error:", error));
+    } else if (selectedOption === "CeaserCipher") {
+      ceaserCipherDecryptAPI(result, string2)
+        .then((decryptedString) => setResult(decryptedString))
+        .catch((error) => console.error("Error:", error));
+    } else if (selectedOption === "DES") {
+      desEncryptDecrypt(result, string2, "de")
         .then((data) => {
-          // console.log(data);
+          // console.log("datat i", data.decrypted_string);
           setResult(data.decrypted_string);
         })
         .catch((error) => console.error("Error:", error));
-    } else if (selectedOption === "CeaserCipher") {
-      fetch(
-        `http://127.0.0.1:8000/apis/ceasercipherdecrypt/?en_plain_text=${result}&shift=${string2}`
-      )
-        .then((response) => response.json())
+    } else if (selectedOption === "AES") {
+      aesEncryptDecrypt(string1, string2, "de")
         .then((data) => {
-          // console.log(data);
+          // console.log("datat i", data.decrypted_string);
+          setResult(data.decrypted_string);
+        })
+        .catch((error) => console.error("Error:", error));
+    } else if (selectedOption === "PolyCipher") {
+      polyEncryptDecrypt(result, string2, "de")
+        .then((data) => {
+          // console.log("datat i", data.decrypted_string);
           setResult(data.decrypted_string);
         })
         .catch((error) => console.error("Error:", error));
     }
   };
+
+  let componentToRender = (
+    <ComponentOne string2={string2} setString2={setString2} />
+  );
+
+  if (selectedOption === "Playfair") {
+    componentToRender = (
+      <ComponentOne string2={string2} setString2={setString2} />
+    );
+  } else if (selectedOption === "CeaserCipher") {
+    componentToRender = (
+      <ComponentTwo string2={string2} setString2={setString2} />
+    );
+  } else if (selectedOption === "DES") {
+    componentToRender = (
+      <ComponentThree string2={string2} setString2={setString2} />
+    );
+  } else if (selectedOption === "DES") {
+    componentToRender = (
+      <ComponentFour string2={string2} setString2={setString2} />
+    );
+  } else if (selectedOption === "PolyCipher") {
+    componentToRender = (
+      <ComponentFive string2={string2} setString2={setString2} />
+    );
+  }
 
   return (
     <div className="App">
@@ -76,29 +180,7 @@ function AppBody() {
           onChange={(e) => setString1(e.target.value)}
         />
 
-        {flag ? (
-          <InputBox
-            type="number"
-            label="Shift"
-            value={string2}
-            onChange={(e) => setString2(e.target.value)}
-            min="1"
-            max="25"
-          />
-        ) : (
-          <InputBox
-            type="text"
-            label="key"
-            value={string2}
-            onChange={(e) => setString2(e.target.value)}
-          />
-        )}
-
-        {/* <InputBox
-          label="Plain Text"
-          value={string2}
-          onChange={(e) => setString2(e.target.value)}
-        /> */}
+        {componentToRender}
       </div>
       <div className="flex justify-center">
         <div className="flex flex-col justify-center  mt-8">
@@ -113,23 +195,38 @@ function AppBody() {
             selectedOption={selectedOption === "CeaserCipher"}
             onChange={handleChange}
           />
+
+          <Radio
+            value="DES"
+            selectedOption={selectedOption === "DES"}
+            onChange={handleChange}
+          />
+
+          <Radio
+            value="AES"
+            selectedOption={selectedOption === "AES"}
+            onChange={handleChange}
+          />
+
+          <Radio
+            value="PolyCipher"
+            selectedOption={selectedOption === "PolyCipher"}
+            onChange={handleChange}
+          />
         </div>
       </div>
+
       {/* <h3 className="text-center mt-5">The string is {selectedOption}</h3> */}
       <div className="flex justify-center mt-4">
         <Btn value="Encrypt" onClick={playFairEncrypt} />
         <Btn value="Decrypt" onClick={playFairDecrypt} />
       </div>
       <h3 className="text-center mt-5">String is {result}</h3>
-      <h3 className="text-center mt-5">String is {flag}</h3>
+      {/* <h3 className="text-center mt-5">Matrix is {matrix}</h3> */}
+      {/* <h3 className="text-center mt-5">String is {flag}</h3> */}
 
-      {/* { flag &&
-        <InputBox
-          label="Plain Text"
-          value={string2}
-          onChange={(e) => setString2(e.target.value)}
-        />
-      } */}
+      {row ? <Matrix matrix={matrix} /> : <></>}
+      <ToastContainer />
     </div>
   );
 }

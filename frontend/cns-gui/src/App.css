@@ -1,0 +1,24 @@
+.matrix {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 30px;
+  }
+  .heading{
+    margin-bottom: 10px;
+  }
+  .row {
+    display: flex;
+  }
+  
+  .cell {
+    border: 1px solid #000;
+    width: 30px; 
+    height: 30px; /* Adjust as needed */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  

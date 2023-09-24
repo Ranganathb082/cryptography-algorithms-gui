@@ -17,6 +17,9 @@ def generateKeyTable(key):
 	for i in range(len(key)):
 		if key[i] != 'j':
 			dicty[key[i]] = 2
+		# elif key[i]=='j':
+		# 	key[i]='i'
+		# 	dicty[key[i]] = 2
 	dicty['j'] = 1
 
 	i, j, k = 0, 0, 0
@@ -90,6 +93,7 @@ def decryptByPlayfairCipher(str, key):
 	# Function to call decrypt
 	ks = len(key)
 	key = removeSpaces(toLowerCase(key))
+	key=key.replace('j','i')
 	str = removeSpaces(toLowerCase(str))
 	keyT = generateKeyTable(key)
 	return decrypt(str, keyT)

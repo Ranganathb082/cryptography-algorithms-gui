@@ -8,7 +8,6 @@ export default function InputBox(props ,value, onChange,type,min,max) {
         placeholder=" "
         value={props.value}
         onChange={props.onChange}
-        autoComplete="off"
         min={props.min}
         max={props.max}
       />

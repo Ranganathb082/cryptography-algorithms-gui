@@ -64,8 +64,13 @@ list1 = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm',
 def generateKeyTable(word, list1):
 	key_letters = []
 	for i in word:
-		if i not in key_letters:
+		if i not in key_letters and 'j' not in word:
 			key_letters.append(i)
+		elif i not in key_letters and 'j' in word:
+			if i!='j':
+				key_letters.append(i)
+			elif i=='j':
+				key_letters.append('i')
 
 	compElements = []
 	for i in key_letters:
@@ -175,7 +180,8 @@ def encryptByPlayFair(text_Plain, key):
 	for i in CipherList:
 		cipherText += i
 	
-	return cipherText
+	return cipherText,Matrix
+	# return cipherText
 
 # print(encryptByPlayFair("Attackatdawn","GravityFalls"))
 
