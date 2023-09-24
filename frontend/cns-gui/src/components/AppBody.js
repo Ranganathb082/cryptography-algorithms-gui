@@ -5,7 +5,9 @@ import Btn from "./Btn";
 import Radio from "./Radio";
 import { Matrix } from "./Matrix";
 import { ToastContainer, toast } from "react-toastify";
+import SliderImage from "./SliderImage";
 import "react-toastify/dist/ReactToastify.css";
+import jsonData from "./desc.json";
 
 import {
   playFairEncryptAPI,
@@ -32,6 +34,8 @@ function AppBody() {
   const [flag, setFlag] = useState(false);
   const [matrix, setMatrix] = useState([]);
   const [condition, setCondition] = useState("ComponentOne");
+  const [desc, setDesc] = useState("");
+  const [heading, setHeading] = useState("");
   const [row, setRow] = useState("");
 
   const [selectedOption, setSelectedOption] = useState(null);
@@ -41,8 +45,23 @@ function AppBody() {
     console.log();
     if (event.target.value === "CeaserCipher") {
       setFlag(true);
+      setDesc(jsonData[4]["description"])
+      setHeading(jsonData[4]["algorithm"])
       console.log("flag");
-    } else {
+    } else if(event.target.value === "Playfair") {
+      setDesc(jsonData[0]["description"])
+      setHeading(jsonData[0]["algorithm"])
+    } else if (event.target.value === "AES"){
+      setDesc(jsonData[2]["description"])
+      setHeading(jsonData[2]["algorithm"])
+    }else if (event.target.value === "DES"){
+      setDesc(jsonData[3]["description"])
+      setHeading(jsonData[3]["algorithm"])
+    } else if (event.target.value === "PolyCipher"){
+      setDesc(jsonData[1]["description"])
+      setHeading(jsonData[1]["algorithm"])
+    }
+    else {
       setFlag(false);
     }
   }
@@ -86,7 +105,7 @@ function AppBody() {
         .catch((error) => console.error("Error:", error));
       setRow(false);
     } else if (selectedOption === "AES") {
-      if (string2.length>=16) {
+      if (string2.length >= 16) {
         aesEncryptDecrypt(string1, string2, "en")
           .then((data) => {
             console.log("data is", data);
@@ -94,7 +113,7 @@ function AppBody() {
           })
           .catch((error) => console.error("Error:", error));
         setRow(false);
-      }else{
+      } else {
         toast.error("Key length should be greater than or euqal to 16!", {
           position: toast.POSITION.TOP_RIGHT,
         });
@@ -148,6 +167,7 @@ function AppBody() {
   );
 
   if (selectedOption === "Playfair") {
+    console.log("sasasa");
     componentToRender = (
       <ComponentOne string2={string2} setString2={setString2} />
     );
@@ -169,10 +189,13 @@ function AppBody() {
     );
   }
 
+  console.log(jsonData[1]["algorithm"]);
+
   return (
     <div className="App">
       <Navbar />
-      <div className="flex justify-center mt-8">
+      <SliderImage />
+      <div className="flex mt-8 ml-72">
         <InputBox
           type="text"
           label="plain text"
@@ -182,10 +205,12 @@ function AppBody() {
 
         {componentToRender}
       </div>
-      <div className="flex justify-center">
-        <div className="flex flex-col justify-center  mt-8">
+
+      <div className="flex justify-around">
+        <div className="flex flex-col justify-between mt-8 font-bold">
           <Radio
             value="Playfair"
+            className="font-bold"
             checked={selectedOption === "Playfair"}
             onChange={handleChange}
           />
@@ -214,18 +239,22 @@ function AppBody() {
             onChange={handleChange}
           />
         </div>
+        <div className="mt-16 ml-12">
+          <Btn value="Encrypt" onClick={playFairEncrypt} />
+          <Btn value="Decrypt" onClick={playFairDecrypt} />
+          <h3 className="text-center mt-5">String is {result}</h3>
+          {row ? <Matrix matrix={matrix} /> : <></>}
+        </div>
+        <div className="mt-12 w-96">
+          <h1 className="mb-4 text-2xl font-semibold">{heading}</h1>
+          <p>{desc}</p>
+        </div>
       </div>
 
       {/* <h3 className="text-center mt-5">The string is {selectedOption}</h3> */}
-      <div className="flex justify-center mt-4">
-        <Btn value="Encrypt" onClick={playFairEncrypt} />
-        <Btn value="Decrypt" onClick={playFairDecrypt} />
-      </div>
-      <h3 className="text-center mt-5">String is {result}</h3>
       {/* <h3 className="text-center mt-5">Matrix is {matrix}</h3> */}
       {/* <h3 className="text-center mt-5">String is {flag}</h3> */}
 
-      {row ? <Matrix matrix={matrix} /> : <></>}
       <ToastContainer />
     </div>
   );

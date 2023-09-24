@@ -21,4 +21,16 @@
     justify-content: center;
     align-items: center;
   }
+
+  html{
+    height: 200vh;
+  }
   
+
+  body{
+    background-color: rgb(255, 238, 5);
+  }
+
+  *{
+    font-size: 18px;
+  }
